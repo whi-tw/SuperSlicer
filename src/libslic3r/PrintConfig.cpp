@@ -867,7 +867,7 @@ void PrintConfigDef::init_fff_params()
     def->label = L("Default");
     def->full_label = L("Default infill margin");
     def->category = OptionCategory::infill;
-    def->tooltip = L("This parameter grows the top/bottom/solid layers by the specified mm to anchor them into the part. Put 0 to deactivate it. Can be a % of the width of the perimeters.");
+    def->tooltip = L("This parameter grows the top/bottom/solid layers by the specified mm to anchor them into the sparse infill and support the perimeters above. Put 0 to deactivate it. Can be a % of the width of the perimeters.");
     def->sidetext = L("mm/%");
     def->ratio_over = "perimeter_extrusion_width";
     def->min = 0;
@@ -879,7 +879,7 @@ void PrintConfigDef::init_fff_params()
     def->label = L("Bridged");
     def->full_label = L("Bridge margin");
     def->category = OptionCategory::infill;
-    def->tooltip = L("This parameter grows the bridged solid infill layers by the specified mm to anchor them into the part. Put 0 to deactivate it. Can be a % of the width of the external perimeter.");
+    def->tooltip = L("This parameter grows the bridged solid infill layers by the specified mm to anchor them into the sparse infill and over the perimeters below. Put 0 to deactivate it. Can be a % of the width of the external perimeter.");
     def->sidetext = L("mm/%");
     def->ratio_over = "external_perimeter_extrusion_width";
     def->min = 0;
@@ -2350,10 +2350,12 @@ void PrintConfigDef::init_fff_params()
         " The Anchored option just slightly enlarges (by 'Default infill margin') the surfaces that need a better support.");
     def->enum_keys_map = &ConfigOptionEnum<DenseInfillAlgo>::get_enum_values();
     def->enum_values.push_back("automatic");
+    def->enum_values.push_back("autonotfull");
     def->enum_values.push_back("autosmall");
     def->enum_values.push_back("autoenlarged");
     def->enum_values.push_back("enlarged");
     def->enum_labels.push_back(L("Automatic"));
+    def->enum_labels.push_back(L("Automatic, unless full"));
     def->enum_labels.push_back(L("Automatic, only for small areas"));
     def->enum_labels.push_back(L("Automatic, or anchored if too big"));
     def->enum_labels.push_back(L("Anchored"));
