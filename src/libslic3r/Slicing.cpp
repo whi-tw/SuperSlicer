@@ -77,7 +77,7 @@ coordf_t Slicing::max_layer_height_from_nozzle(const DynamicPrintConfig &print_c
 }
 
 
-SlicingParameters SlicingParameters::create_from_config(
+std::shared_ptr<SlicingParameters> SlicingParameters::create_from_config(
 	const PrintConfig 		&print_config, 
 	const PrintObjectConfig &object_config,
 	coordf_t				 object_height,
@@ -111,7 +111,8 @@ SlicingParameters SlicingParameters::create_from_config(
     coordf_t support_material_interface_extruder_dmr = print_config.nozzle_diameter.get_at(object_config.support_material_interface_extruder.value - 1);
     bool     soluble_interface                       = object_config.support_material_contact_distance_type.value == zdNone;
 
-    SlicingParameters params;
+    std::shared_ptr<SlicingParameters> slicing_params = std::make_shared<SlicingParameters>();
+    SlicingParameters& params = *slicing_params.get();
     params.layer_height = object_config.layer_height.value;
     params.first_print_layer_height = first_layer_height;
     params.first_object_layer_height = first_layer_height;
@@ -230,7 +231,7 @@ SlicingParameters SlicingParameters::create_from_config(
     assert(test_z_step(params.object_print_z_max, params.z_step));
 
     params.valid = true;
-    return params;
+    return slicing_params;
 }
 
 // Convert layer_config_ranges to layer_height_profile. Both are referenced to z=0, meaning the raft layers are not accounted for
@@ -302,7 +303,7 @@ std::vector<double> layer_height_profile_adaptive(const SlicingParameters& slici
 {
     // 1) Initialize the SlicingAdaptive class with the object meshes.
     SlicingAdaptive as;
-    as.set_slicing_parameters(slicing_params);
+    as.set_slicing_parameters(&slicing_params);
     as.prepare(object);
 
     // 2) Generate layers using the algorithm of @platsch 
@@ -544,7 +545,8 @@ void adjust_layer_height_profile(
     size_t idx = 0;
     while (idx < layer_height_profile.size() && layer_height_profile[idx] < lo)
         idx += 2;
-    idx -= 2;
+    if(idx > 1)
+        idx -= 2;
 
     std::vector<double> profile_new;
     profile_new.reserve(layer_height_profile.size());
