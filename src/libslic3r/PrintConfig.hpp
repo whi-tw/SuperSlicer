@@ -165,8 +165,10 @@ enum SupportMaterialInterfacePattern {
 
 enum SeamPosition {
     spRandom,
+    spAllRandom,
     spNearest, //not used anymore
     spAligned,
+    spExtremlyAligned,
     spRear,
     spCustom, // or seam object
     spCost,
